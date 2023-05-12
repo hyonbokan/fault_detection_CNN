@@ -11,7 +11,7 @@ from keras.optimizers import *
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler, ReduceLROnPlateau, TensorBoard
 from keras import backend as keras
 from utils import DataGenerator
-from model import *
+from unet import *
 
 def main():
   goTrain()
