@@ -75,3 +75,25 @@ class DataGenerator(keras.utils.Sequence):
       Y[i,] = np.reshape(np.rot90(fx,i,(2,1)), (*self.dim,self.n_channels))  
     '''
     return X,Y
+
+
+def generate_data(dpath, fpath, data_IDs, batch_size=1, dim=(128, 128, 128), n_channels=1, shuffle=True):
+    gx = np.fromfile(dpath + str(data_IDs[0]) + '.dat', dtype=np.single)
+    fx = np.fromfile(fpath + str(data_IDs[0]) + '.dat', dtype=np.single)
+    gx = np.reshape(gx, dim)
+    fx = np.reshape(fx, dim)
+    xm = np.mean(gx)
+    xs = np.std(gx)
+    gx = gx - xm
+    gx = gx / xs
+    gx = np.transpose(gx)
+    fx = np.transpose(fx)
+
+    X = np.zeros((2, *dim, n_channels), dtype=np.single)
+    Y = np.zeros((2, *dim, n_channels), dtype=np.single)
+    X[0,] = np.reshape(gx, (*dim, n_channels))
+    Y[0,] = np.reshape(fx, (*dim, n_channels))
+    X[1,] = np.reshape(np.flipud(gx), (*dim, n_channels))
+    Y[1,] = np.reshape(np.flipud(fx), (*dim, n_channels))
+
+    return X, Y

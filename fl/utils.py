@@ -51,11 +51,6 @@ class DataGenerator(keras.utils.Sequence):
     fx  = np.fromfile(self.fpath+str(data_IDs_temp[0])+'.dat',dtype=np.single)
     gx = np.reshape(gx,self.dim)
     fx = np.reshape(fx,self.dim)
-    #gmin = np.min(gx)
-    #gmax = np.max(gx)
-    #gx = gx-gmin
-    #gx = gx/(gmax-gmin)
-    #gx = gx*255
     xm = np.mean(gx)
     xs = np.std(gx)
     gx = gx-xm
@@ -78,6 +73,7 @@ class DataGenerator(keras.utils.Sequence):
       Y[i,] = np.reshape(np.rot90(fx,i,(2,1)), (*self.dim,self.n_channels))  
     '''
     return X,Y
+
 
 
 class TrainValTensorBoard(TensorBoard):

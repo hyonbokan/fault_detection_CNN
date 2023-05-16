@@ -1,15 +1,15 @@
 import os
 import shutil
 
-# Specify the dataset directory, output directory, and number of clients
-dataset_directory = "../../data_seismic/cl/train/"
+# Change dir for tran and val datasets
+dataset_directory = "../../data_seismic/cl/validation/"
 output_directory = "../../data_seismic/fl/"
 num_clients = 2
 
 def split_datasets(dataset_dir, output_dir, num_clients):
-    
+
     for i in range(1, num_clients + 1):
-        client_dir = os.path.join(output_dir, f"client{i}/train")
+        client_dir = os.path.join(output_dir, f"client{i}/validation")
         os.makedirs(client_dir, exist_ok=True)
         os.makedirs(os.path.join(client_dir, "seis"), exist_ok=True)
         os.makedirs(os.path.join(client_dir, "fault"), exist_ok=True)
@@ -27,7 +27,7 @@ def split_datasets(dataset_dir, output_dir, num_clients):
 
     # Copy files to client directories
     for i in range(num_clients):
-        client_dir = os.path.join(output_dir, f"client{i+1}/train")
+        client_dir = os.path.join(output_dir, f"client{i+1}/validation")
         start_index = i * files_per_client
         end_index = (i + 1) * files_per_client
 
@@ -43,7 +43,7 @@ def split_datasets(dataset_dir, output_dir, num_clients):
 
     # Check if file names match in each client directory
     for i in range(1, num_clients + 1):
-        client_dir = os.path.join(output_dir, f"client{i}/train")
+        client_dir = os.path.join(output_dir, f"client{i}/validation")
         client_seis_files = os.listdir(os.path.join(client_dir, "seis"))
         client_fault_files = os.listdir(os.path.join(client_dir, "fault"))
 
