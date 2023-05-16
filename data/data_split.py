@@ -1,31 +1,55 @@
 import os
 import shutil
 
-# Specify the directory and number of clients
-directory = '/path/to/directory'  # Replace with your directory path
-num_clients = 2  # Replace with the desired number of clients
+# Specify the dataset directory, output directory, and number of clients
+dataset_directory = "../../data_seismic/cl/train/"
+output_directory = "../../data_seismic/fl/"
+num_clients = 2
 
-def split_files(directory, num_clients):
-    # Create client directories if they don't exist
+def split_datasets(dataset_dir, output_dir, num_clients):
+    
     for i in range(1, num_clients + 1):
-        client_dir = os.path.join(directory, f"client{i}")
+        client_dir = os.path.join(output_dir, f"client{i}/train")
         os.makedirs(client_dir, exist_ok=True)
-    
-    # Get the list of files in the directory
-    files = os.listdir(directory)
-    # Calc number of files per client
-    files_per_client = len(files) // num_clients
-    
+        os.makedirs(os.path.join(client_dir, "seis"), exist_ok=True)
+        os.makedirs(os.path.join(client_dir, "fault"), exist_ok=True)
+
+    seis_dir = os.path.join(dataset_dir, "seis")
+    seis_files = os.listdir(seis_dir)
+
+    fault_dir = os.path.join(dataset_dir, "fault")
+    fault_files = os.listdir(fault_dir)
+
+    assert len(seis_files) == len(fault_files), "Seismic and fault files do not match."
+
+    # Calculate the number of files per client
+    files_per_client = len(seis_files) // num_clients
+
     # Copy files to client directories
     for i in range(num_clients):
-        client_dir = os.path.join(directory, f"client{i+1}")
+        client_dir = os.path.join(output_dir, f"client{i+1}/train")
         start_index = i * files_per_client
         end_index = (i + 1) * files_per_client
-        
-        # Copy files for the current client
-        for file in files[start_index:end_index]:
-            file_path = os.path.join(directory, file)
-            shutil.copy(file_path, client_dir)
+
+        # Copy seismic files
+        for file in seis_files[start_index:end_index]:
+            file_path = os.path.join(seis_dir, file)
+            shutil.copy(file_path, os.path.join(client_dir, "seis"))
+
+        # Copy fault files 
+        for file in fault_files[start_index:end_index]:
+            file_path = os.path.join(fault_dir, file)
+            shutil.copy(file_path, os.path.join(client_dir, "fault"))
+
+    # Check if file names match in each client directory
+    for i in range(1, num_clients + 1):
+        client_dir = os.path.join(output_dir, f"client{i}/train")
+        client_seis_files = os.listdir(os.path.join(client_dir, "seis"))
+        client_fault_files = os.listdir(os.path.join(client_dir, "fault"))
+
+        assert set(client_seis_files) == set(client_fault_files), f"File names do not match in client{i} directory."
 
 
-split_files(directory, num_clients)
+# Call the split_datasets function
+split_datasets(dataset_directory, output_directory, num_clients)
+print("Finished")
