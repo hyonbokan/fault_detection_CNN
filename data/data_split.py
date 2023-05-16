@@ -1,22 +1,24 @@
 import os
 import shutil
 
-directory = '/path/to/directory'  
-NUM_CLIENTS = 2  # Replace with your client names
+# Specify the directory and number of clients
+directory = '/path/to/directory'  # Replace with your directory path
+num_clients = 2  # Replace with the desired number of clients
 
-
-def split_files(directory, clients):
-    for client in clients:
-        client_dir = os.path.join(directory, client)
+def split_files(directory, num_clients):
+    # Create client directories if they don't exist
+    for i in range(1, num_clients + 1):
+        client_dir = os.path.join(directory, f"client{i}")
         os.makedirs(client_dir, exist_ok=True)
     
+    # Get the list of files in the directory
     files = os.listdir(directory)
-
-    files_per_client = len(files) // NUM_CLIENTS
+    # Calc number of files per client
+    files_per_client = len(files) // num_clients
     
     # Copy files to client directories
-    for i, client in range(NUM_CLIENTS):
-        client_dir = os.path.join(directory, client)
+    for i in range(num_clients):
+        client_dir = os.path.join(directory, f"client{i+1}")
         start_index = i * files_per_client
         end_index = (i + 1) * files_per_client
         
@@ -26,5 +28,4 @@ def split_files(directory, clients):
             shutil.copy(file_path, client_dir)
 
 
-# Call the split_files function
-split_files(directory, NUM_CLIENTS)
+split_files(directory, num_clients)
